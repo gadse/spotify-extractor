@@ -1,3 +1,13 @@
+# Project Files
+credentials.properties
+
+# Build System Cache
+.gradle
+build/*
+
+# IDE Settings
+.idea
+
 # Compiled class file
 *.class
 
