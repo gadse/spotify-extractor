@@ -14,8 +14,7 @@ class SpotifyConnection (
 
     private val CLIENT_ID = properties.get("CLIENT_ID")
     private val CLIENT_SECRET = properties.get("CLIENT_SECRET")
-
-    val AUTH_URL = properties.get("auth.url")
+    private val AUTH_URL = properties.get("auth.url")
 
     private val client: HttpClient
         get() {
@@ -41,28 +40,44 @@ class SpotifyConnection (
      *          -H "Authorization: Bearer  BQDBKJ5eo5jxbtpWjVOj7ryS84khybFpP_lTqzV7uV-T_m0cTfwvdn5BnBSKPxKgEb11"
      */
     suspend fun obtain_token(): String {
+        val headers = mapOf(
+            HttpHeaders.ContentType to "application/x-www-form-urlencoded"
+        )
+
         val data = mapOf(
             "grant_type" to "client_credentials",
             "client_id" to CLIENT_ID,
             "client_secret" to CLIENT_SECRET,
         )
-
         val body = data.entries
             .map { entry -> entry.key + "=" + entry.value }
             .joinToString("&")
 
+        val response: HttpResponse = doPostCall(headers, body)
+
+        if (response.status.value in 200..299) {
+            return response.body<AuthResponse>().access_token
+        } else {
+            throw IOException(
+                "Error during authorization!\n"
+                + response.status.toString()
+            )
+        }
+    }
+
+    private suspend fun doPostCall(
+        headers: Map<String, String>,
+        body: String
+    ): HttpResponse {
         val response: HttpResponse = client.post(AUTH_URL) {
             headers {
-                append(HttpHeaders.ContentType, "application/x-www-form-urlencoded")
+                for (entry in headers) {
+                    append(entry.key, entry.value)
+                }
             }
             setBody(body)
         }
-
-        if (response.status.value in 200..299) {
-            println("Authorization successful")
-        }
-
-        return response.body<AuthResponse>().access_token
+        return response
     }
 
     override fun close() {
