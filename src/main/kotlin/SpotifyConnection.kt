@@ -53,7 +53,7 @@ class SpotifyConnection (
             .map { entry -> entry.key + "=" + entry.value }
             .joinToString("&")
 
-        val response: HttpResponse = doPostCall(headers, body)
+        val response: HttpResponse = doPostCall(AUTH_URL, headers, body)
 
         if (response.status.value in 200..299) {
             return response.body<AuthResponse>().access_token
@@ -66,10 +66,11 @@ class SpotifyConnection (
     }
 
     private suspend fun doPostCall(
+        url: String,
         headers: Map<String, String>,
         body: String
     ): HttpResponse {
-        val response: HttpResponse = client.post(AUTH_URL) {
+        val response: HttpResponse = client.post(url) {
             headers {
                 for (entry in headers) {
                     append(entry.key, entry.value)
