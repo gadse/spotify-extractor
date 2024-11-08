@@ -1,5 +1,5 @@
 # Project Files
-credentials.properties
+src/main/resources/credentials.properties
 
 # Build System Cache
 .gradle

@@ -11,6 +11,11 @@ class Properties {
     init {
         for (path in arrayOf(CONFIG_PATH, CREDENTIALS_PATH)) {
             val file = this::class.java.classLoader.getResourceAsStream(path)
+            if (file == null) {
+                throw IOException(
+                    "Necessary file is missing: $path"
+                )
+            }
             properties.load(file)
         }
 

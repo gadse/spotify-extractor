@@ -4,11 +4,14 @@ suspend fun main(args: Array<String>) {
     println("Program arguments: ${args.joinToString()}")
 
     SpotifyConnection(Properties()).use {
-        connection -> println(connection.obtain_token())
+        connection ->
+            println(connection.obtain_token())
+            println(connection.obtain_playlists())
+
     }
     //val favourites = spotify.fetchFavourites()
     //val playlists = spotify.fetchPlaylist()
 
     //println("Favourites: ${favourites}")
-    //println("Playlist: ${playlists}")
+    //println("model.Playlist: ${playlists}")
 }
